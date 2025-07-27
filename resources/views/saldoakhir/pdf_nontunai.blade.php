@@ -34,11 +34,11 @@
         .ttd {
             margin-top: 40px;
             width: 100%;
-            text-align: right;
         }
 
         .ttd p {
             margin-bottom: 60px;
+            text-align: right;
         }
 
         table {
@@ -87,7 +87,9 @@
             </tr>
         </thead>
         <tbody>
+            @php $totalPengeluaran = 0; @endphp
             @forelse($pengeluaran as $index => $item)
+            @php $totalPengeluaran += $item->nominal; @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
                 <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
@@ -100,6 +102,10 @@
                 <td colspan="5" style="text-align:center;">Tidak ada pengeluaran non tunai.</td>
             </tr>
             @endforelse
+            <tr>
+                <td colspan="4"><strong>Total Pengeluaran</strong></td>
+                <td><strong>Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</strong></td>
+            </tr>
         </tbody>
     </table>
 

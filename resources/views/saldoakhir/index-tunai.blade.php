@@ -8,7 +8,7 @@
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
                 @if (Auth::user()->role === 'bendahara')
                 <a href="{{ route('saldo-akhir.tunai.create') }}">
-                    <x-button>Tambah Saldo Tunai</x-button>
+                    <x-button>Tambah Saldo Akhir Tunai</x-button>
                 </a>
                 @endif
 

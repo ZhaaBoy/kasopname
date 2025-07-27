@@ -23,9 +23,8 @@
                     </p>
                 </div>
                 <div>
-                    <a href="{{ route('saldo-akhir.pdf.tunai', $saldo->id) }}" target="_blank"
-                        class="inline-block px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 transition">
-                        Cetak PDF
+                    <a href="{{ route('saldo-akhir.pdf.tunai', $saldo->id) }}" target="_blank">
+                        <x-button>Cetak PDF</x-button>
                     </a>
                 </div>
             </div>
@@ -33,12 +32,20 @@
             <hr class="my-4">
 
             <h3 class="text-md font-bold mb-2">Rincian Uang Lembaran:</h3>
-            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5">
                 @foreach ([100000, 50000, 20000, 10000, 5000, 2000, 1000, 500, 200, 100] as $nilai)
-                <div class="bg-gray-100 p-3 rounded shadow-sm">
-                    <p class="font-medium">Rp {{ number_format($nilai, 0, ',', '.') }}</p>
-                    <p class="text-gray-700">Lembar: {{ $saldo['lembar_'.$nilai] }}</p>
-                    <p class="text-sm text-gray-500">Total: Rp {{ number_format($saldo['lembar_'.$nilai] * $nilai, 0, ',', '.') }}</p>
+                <div class="bg-white rounded-2xl shadow-md p-4 hover:shadow-lg transition duration-300 border border-gray-200">
+                    <div class="flex items-center justify-between mb-2">
+                        <div class="text-lg font-semibold text-green-700">
+                            Rp {{ number_format($nilai, 0, ',', '.') }}
+                        </div>
+                    </div>
+                    <div class="text-sm text-gray-800 mb-1">
+                        <span class="font-medium">Lembar:</span> {{ $saldo['lembar_'.$nilai] }}
+                    </div>
+                    <div class="text-sm text-gray-600">
+                        <span class="font-medium">Total:</span> Rp {{ number_format($saldo['lembar_'.$nilai] * $nilai, 0, ',', '.') }}
+                    </div>
                 </div>
                 @endforeach
             </div>
