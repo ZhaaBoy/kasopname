@@ -91,13 +91,16 @@
             @php
             $lembar = $saldo['lembar_'.$nilai];
             $total = $lembar * $nilai;
-            $grandTotal += $total;
             @endphp
+
+            @if ($lembar > 0)
+            @php $grandTotal += $total; @endphp
             <tr>
                 <td>Rp {{ number_format($nilai, 0, ',', '.') }}</td>
                 <td>{{ $lembar }}</td>
                 <td>Rp {{ number_format($total, 0, ',', '.') }}</td>
             </tr>
+            @endif
             @endforeach
             <tr>
                 <td colspan="2"><strong>Total Keseluruhan</strong></td>
