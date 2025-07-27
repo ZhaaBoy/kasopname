@@ -6,9 +6,11 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg p-6">
+                @if (Auth::user()->role === 'bendahara')
                 <a href="{{ route('saldo-akhir.tunai.create') }}">
                     <x-button>Tambah Saldo Tunai</x-button>
                 </a>
+                @endif
 
                 <div class="overflow-x-auto rounded-xl shadow mt-4">
                     @if (session('success'))
@@ -49,11 +51,13 @@
                                 <td class="px-4 py-2">
                                     <div class="flex justify-center gap-2">
                                         <a href="{{ route('saldo-akhir.showTunai', $item->id) }}"><x-button>Detail</x-button></a>
+                                        @if (Auth::user()->role === 'bendahara')
                                         <form action="{{ route('saldo-akhir.destroy', $item->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ini?')">
                                             @csrf
                                             @method('DELETE')
                                             <x-danger-button>Hapus</x-danger-button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

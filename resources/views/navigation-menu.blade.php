@@ -18,10 +18,10 @@
                     <x-nav-link href="{{ route('kas.index') }}" :active="request()->routeIs('kas.*')">
                         {{ __('Transaksi') }}
                     </x-nav-link>
-                    <x-nav-link href="{{ route('saldo-akhir.tunai') }}" :active="request()->routeIs('saldo-akhir.tunai')">
+                    <x-nav-link href="{{ route('saldo-akhir.tunai') }}" :active="request()->routeIs('saldo-akhir.tunai*')">
                         {{ __('Saldo Akhir Tunai') }}
                     </x-nav-link>
-                    <x-nav-link href="{{ route('saldo-akhir.non-tunai') }}" :active="request()->routeIs('saldo-akhir.non-tunai')">
+                    <x-nav-link href="{{ route('saldo-akhir.non-tunai') }}" :active="request()->routeIs('saldo-akhir.non-tunai*')">
                         {{ __('Saldo Akhir Non Tunai') }}
                     </x-nav-link>
                 </div>
@@ -103,19 +103,10 @@
 
                         <x-slot name="content">
                             <!-- Account Management -->
-                            <div class="block px-4 py-2 text-xs text-gray-400">
+                            <!-- <div class="block px-4 py-2 text-xs text-gray-400">
                                 {{ __('Manage Account') }}
-                            </div>
+                            </div> -->
 
-                            <x-dropdown-link href="{{ route('profile.show') }}">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
-
-                            @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                            <x-dropdown-link href="{{ route('api-tokens.index') }}">
-                                {{ __('API Tokens') }}
-                            </x-dropdown-link>
-                            @endif
 
                             <div class="border-t border-gray-200"></div>
 

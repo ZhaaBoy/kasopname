@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jul 27, 2025 at 10:56 AM
+-- Generation Time: Jul 27, 2025 at 11:19 AM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.16
 
@@ -38,8 +38,8 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60', 'i:1;', 1753604893),
-('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60:timer', 'i:1753604893;', 1753604893);
+('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60', 'i:1;', 1753614455),
+('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60:timer', 'i:1753614455;', 1753614455);
 
 -- --------------------------------------------------------
 
@@ -135,7 +135,6 @@ CREATE TABLE `kas_transaksis` (
   `nominal` bigint NOT NULL,
   `metode_pembayaran` enum('tunai','non_tunai') COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_by` bigint UNSIGNED NOT NULL,
-  `approved_by` bigint UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -167,7 +166,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (8, '2025_07_26_131357_create_uang_lembaran_tunai_table', 1),
 (9, '2025_07_26_161838_change_sumber_dana_type_in_kas_transaksis_table', 1),
 (10, '2025_07_27_081419_create_saldo_akhirs_table', 2),
-(11, '2025_07_27_095135_add_tanggal_periode_to_saldo_akhirs_table', 3);
+(11, '2025_07_27_095135_add_tanggal_periode_to_saldo_akhirs_table', 3),
+(12, '2025_07_27_111831_remove_approved_by_from_kas_transaksis_table', 4);
 
 -- --------------------------------------------------------
 
@@ -247,7 +247,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('Uv9KdGyQJJRGWd3YesSQTuiitKayMsdBoGlHezcI', 1, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoiakVkdjlueHZDN0dnR1JsNDhDc3I0U1BXS1ZYQ3l4OGhhSmxUeW1WeiI7czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjMxOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvZGFzaGJvYXJkIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTtzOjIxOiJwYXNzd29yZF9oYXNoX3NhbmN0dW0iO3M6NjA6IiQyeSQxMiRnZ2ZOaWRzVEtXamF2dERHYW5VZmxPdHQySEdQbi5YS0piWDFDbG5jbk5FTnYuSFZoQW92VyI7fQ==', 1753613720);
+('XaxpFOEzAzOtR3LijxsE2ArIN58wBesVQ3YynNU4', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNDVFS29Pc2NIY3Z3aEJRTzY3V1Y4TEIwcUt0c3Y4NTRRVnpLTGtuTiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyMToiaHR0cDovLzEyNy4wLjAuMTo4MDAwIjt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fX0=', 1753615043);
 
 -- --------------------------------------------------------
 
@@ -351,8 +351,7 @@ ALTER TABLE `job_batches`
 --
 ALTER TABLE `kas_transaksis`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `kas_transaksis_created_by_foreign` (`created_by`),
-  ADD KEY `kas_transaksis_approved_by_foreign` (`approved_by`);
+  ADD KEY `kas_transaksis_created_by_foreign` (`created_by`);
 
 --
 -- Indexes for table `migrations`
@@ -435,7 +434,7 @@ ALTER TABLE `kas_transaksis`
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -475,7 +474,6 @@ ALTER TABLE `detail_pengeluaran_barangs`
 -- Constraints for table `kas_transaksis`
 --
 ALTER TABLE `kas_transaksis`
-  ADD CONSTRAINT `kas_transaksis_approved_by_foreign` FOREIGN KEY (`approved_by`) REFERENCES `users` (`id`),
   ADD CONSTRAINT `kas_transaksis_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`);
 
 --

@@ -5,16 +5,16 @@ use App\Http\Controllers\KasTransaksiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SaldoAkhirController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Route::get('/', function () {
+//     return view('welcome');
+// });
 
 Route::middleware([
     'auth:sanctum',
     config('jetstream.auth_session'),
     'verified',
 ])->group(function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 });
 
 Route::middleware(['auth:sanctum', 'verified'])->group(function () {
