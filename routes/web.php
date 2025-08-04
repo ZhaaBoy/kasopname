@@ -20,8 +20,10 @@ Route::middleware(['auth', 'role:bendahara'])->group(function () {
     Route::get('/kas/create', [KasTransaksiController::class, 'create'])->name('kas.create');
     Route::post('/kas', [KasTransaksiController::class, 'store'])->name('kas.store');
     Route::delete('/kas/{kas}', [KasTransaksiController::class, 'destroy'])->name('kas.destroy');
+    Route::get('/api/saldo-tunai', [\App\Http\Controllers\SaldoAkhirController::class, 'getSaldoTunai']);
     Route::post('/tunai', [SaldoAkhirController::class, 'storeTunai'])->name('saldo-akhir.tunai.store');
     Route::get('/saldo-akhir/tunai/create', [SaldoAkhirController::class, 'createTunai'])->name('saldo-akhir.tunai.create');
+    Route::get('/api/saldo-non-tunai', [SaldoAkhirController::class, 'getSaldoNonTunai']);
     Route::get('/saldo-akhir/non-tunai/create', [SaldoAkhirController::class, 'createNonTunai'])->name('saldo-akhir.nontunai.create');
     Route::post('/nontunai', [SaldoAkhirController::class, 'storeNonTunai'])->name('saldo-akhir.nontunai.store');
     Route::delete('/saldo-akhir/{id}', [SaldoAkhirController::class, 'destroy'])->name('saldo-akhir.destroy');

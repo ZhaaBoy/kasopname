@@ -11,13 +11,19 @@ class SaldoAkhirController extends Controller
 {
     public function indexTunai()
     {
-        $saldos = SaldoAkhir::where('saldo_tunai', '>', 0)->orderBy('periode_bulan', 'desc')->paginate(10);
+        $saldos = SaldoAkhir::whereNotNull('saldo_tunai') // hanya data yang saldo_tunai TIDAK null
+            ->orderBy('saldo_tunai', 'desc')
+            ->paginate(10);
+
         return view('saldoakhir.index-tunai', compact('saldos'));
     }
 
     public function indexNonTunai()
     {
-        $saldos = SaldoAkhir::where('saldo_non_tunai', '>', 0)->orderBy('periode_bulan', 'desc')->paginate(10);
+        $saldos = SaldoAkhir::whereNotNull('saldo_non_tunai') // hanya data yang saldo_non_tunai TIDAK null
+            ->orderBy('saldo_non_tunai', 'desc')
+            ->paginate(10);
+
         return view('saldoakhir.index-non-tunai', compact('saldos'));
     }
 
@@ -56,16 +62,37 @@ class SaldoAkhirController extends Controller
     {
         $request->validate([
             'periode_bulan' => 'required|string',
-            'saldo_tunai' => 'required|numeric',
             'tanggal_awal' => 'required|date',
             'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
         ]);
 
+        // Ambil tanggal
+        $tanggalAwal = $request->tanggal_awal;
+        $tanggalAkhir = $request->tanggal_akhir;
+
+        // Hitung penarikan tunai (pemasukan ke kas tunai)
+        $penarikanTunai = KasTransaksi::where('jenis_transaksi', 'penarikan_tunai')
+            ->whereBetween('tanggal_transaksi', [$tanggalAwal, $tanggalAkhir])
+            ->sum('nominal');
+
+        // Hitung pengeluaran tunai (pengurangan dari kas tunai)
+        $pengeluaranTunai = KasTransaksi::where('jenis_transaksi', 'pengeluaran')
+            ->where('metode_pembayaran', 'tunai')
+            ->whereBetween('tanggal_transaksi', [$tanggalAwal, $tanggalAkhir])
+            ->sum('nominal');
+
+        // Saldo tunai = penarikan - pengeluaran tunai
+        $saldoTunai = $penarikanTunai - $pengeluaranTunai;
+        if ($saldoTunai < 0) {
+            return back()->withErrors('Saldo non tunai negatif, periksa data transaksi.')->withInput();
+        }
+        // Simpan ke DB
         SaldoAkhir::create([
             'periode_bulan' => $request->periode_bulan,
-            'saldo_tunai' => $request->saldo_tunai,
-            'tanggal_awal' => $request->tanggal_awal,
-            'tanggal_akhir' => $request->tanggal_akhir,
+            'saldo_tunai' => $saldoTunai,
+            'tanggal_awal' => $tanggalAwal,
+            'tanggal_akhir' => $tanggalAkhir,
+            'saldo_non_tunai' => null,
             'lembar_100000' => $request->input('lembar_100000', 0),
             'lembar_50000' => $request->input('lembar_50000', 0),
             'lembar_20000' => $request->input('lembar_20000', 0),
@@ -81,12 +108,44 @@ class SaldoAkhirController extends Controller
         return redirect()->route('saldo-akhir.tunai')->with('success', 'Saldo tunai berhasil ditambahkan.');
     }
 
+    public function getSaldoTunai(Request $request)
+    {
+        $awal = $request->query('tanggal_awal');
+        $akhir = $request->query('tanggal_akhir');
+
+        if (!$awal || !$akhir) {
+            return response()->json(['error' => 'Tanggal tidak lengkap'], 400);
+        }
+
+        // Hitung total penarikan tunai (masuk ke kas tunai)
+        $penarikanTunai = KasTransaksi::where('jenis_transaksi', 'penarikan_tunai')
+            ->whereBetween('tanggal_transaksi', [$awal, $akhir])
+            ->sum('nominal');
+
+        // Hitung total pengeluaran tunai (keluar dari kas tunai)
+        $pengeluaranTunai = KasTransaksi::where('jenis_transaksi', 'pengeluaran')
+            ->where('metode_pembayaran', 'tunai')
+            ->whereBetween('tanggal_transaksi', [$awal, $akhir])
+            ->sum('nominal');
+
+        // Saldo tunai = penarikan - pengeluaran
+        $saldo = $penarikanTunai - $pengeluaranTunai;
+
+        return response()->json(['saldo_tunai' => $saldo]);
+    }
+
     public function cetakNonTunai($id)
     {
         $saldo = SaldoAkhir::findOrFail($id);
 
-        $pengeluaran = KasTransaksi::where('jenis_transaksi', 'pengeluaran')
-            ->where('metode_pembayaran', 'non_tunai')
+        $pengeluaran = KasTransaksi::where(function ($query) {
+            $query->where('jenis_transaksi', 'pengeluaran')
+                ->where('metode_pembayaran', 'non_tunai');
+        })
+            ->orWhere(function ($query) {
+                $query->where('jenis_transaksi', 'penarikan_tunai')
+                    ->where('metode_pembayaran', 'tunai');
+            })
             ->whereBetween('tanggal_transaksi', [$saldo->tanggal_awal, $saldo->tanggal_akhir])
             ->orderBy('tanggal_transaksi')
             ->get();
@@ -106,20 +165,80 @@ class SaldoAkhirController extends Controller
     {
         $request->validate([
             'periode_bulan' => 'required|string',
-            'saldo_non_tunai' => 'required|numeric',
             'tanggal_awal' => 'required|date',
             'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
         ]);
 
+        $tanggalAwal = $request->tanggal_awal;
+        $tanggalAkhir = $request->tanggal_akhir;
+
+        // Hitung pemasukan non tunai
+        $pemasukanNonTunai = KasTransaksi::where('jenis_transaksi', 'pemasukan')
+            ->where('metode_pembayaran', 'non_tunai')
+            ->whereBetween('tanggal_transaksi', [$tanggalAwal, $tanggalAkhir])
+            ->sum('nominal');
+
+        $pengeluaranNonTunai = KasTransaksi::where(function ($query) use ($tanggalAwal, $tanggalAkhir) {
+            $query->where(function ($q) {
+                $q->where('jenis_transaksi', 'pengeluaran')
+                    ->where('metode_pembayaran', 'non_tunai');
+            })
+                ->orWhere(function ($q) {
+                    $q->where('jenis_transaksi', 'penarikan_tunai')
+                        ->where('metode_pembayaran', 'tunai');
+                });
+        })
+            ->whereBetween('tanggal_transaksi', [$tanggalAwal, $tanggalAkhir]) // <- letakkan di luar
+            ->sum('nominal');
+
+        $saldoNonTunai = $pemasukanNonTunai - $pengeluaranNonTunai;
+
+        if ($saldoNonTunai < 0) {
+            return back()->withErrors('Saldo non tunai negatif, periksa data transaksi.')->withInput();
+        }
+
         SaldoAkhir::create([
             'periode_bulan' => $request->periode_bulan,
-            'saldo_non_tunai' => $request->saldo_non_tunai,
-            'tanggal_awal' => $request->tanggal_awal,
-            'tanggal_akhir' => $request->tanggal_akhir,
+            'saldo_non_tunai' => $saldoNonTunai,
+            'tanggal_awal' => $tanggalAwal,
+            'tanggal_akhir' => $tanggalAkhir,
         ]);
 
         return redirect()->route('saldo-akhir.non-tunai')->with('success', 'Saldo non tunai berhasil ditambahkan.');
     }
+
+    public function getSaldoNonTunai(Request $request)
+    {
+        $awal = $request->query('tanggal_awal');
+        $akhir = $request->query('tanggal_akhir');
+
+        if (!$awal || !$akhir) {
+            return response()->json(['error' => 'Tanggal tidak lengkap'], 400);
+        }
+
+        $pemasukan = KasTransaksi::where('jenis_transaksi', 'pemasukan')
+            ->where('metode_pembayaran', 'non_tunai')
+            ->whereBetween('tanggal_transaksi', [$awal, $akhir])
+            ->sum('nominal');
+
+        $pengeluaran = KasTransaksi::where(function ($query) {
+            $query->where(function ($q) {
+                $q->where('jenis_transaksi', 'pengeluaran')
+                    ->where('metode_pembayaran', 'non_tunai');
+            })
+                ->orWhere(function ($q) {
+                    $q->where('jenis_transaksi', 'penarikan_tunai')
+                        ->where('metode_pembayaran', 'tunai');
+                });
+        })
+            ->whereBetween('tanggal_transaksi', [$awal, $akhir])
+            ->sum('nominal');
+
+        $saldo = $pemasukan - $pengeluaran;
+
+        return response()->json(['saldo_non_tunai' => $saldo]);
+    }
+
     public function destroy($id)
     {
         $saldo = SaldoAkhir::findOrFail($id);

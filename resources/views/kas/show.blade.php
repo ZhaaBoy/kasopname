@@ -13,7 +13,7 @@
                     <div><strong>Tanggal:</strong> {{ $transaksi->tanggal_transaksi }}</div>
                     <div><strong>Jenis:</strong> {{ ucwords(str_replace('_', ' ', $transaksi->jenis_transaksi)) }}</div>
                     <div><strong>Nominal:</strong> Rp {{ number_format($transaksi->nominal, 0, ',', '.') }}</div>
-                    <div><strong>Metode Pembayaran:</strong> {{ ucfirst($transaksi->metode_pembayaran) }}</div>
+                    <div><strong>Metode Pembayaran:</strong> {{ ucwords(str_replace('_', ' ', $transaksi->metode_pembayaran)) }}</div>
                     <div class="col-span-2"><strong>Deskripsi:</strong> {{ $transaksi->deskripsi }}</div>
                 </div>
 

@@ -92,7 +92,7 @@
             @php $totalPengeluaran += $item->nominal; @endphp
             <tr>
                 <td>{{ $index + 1 }}</td>
-                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
+                <td>{{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d/m/Y') }}</td>
                 <td>{{ $item->deskripsi ?? '-' }}</td>
                 <td>{{ $item->sumber_dana }}</td>
                 <td>Rp {{ number_format($item->nominal, 0, ',', '.') }}</td>
