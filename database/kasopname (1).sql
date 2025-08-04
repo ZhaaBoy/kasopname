@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: Jul 27, 2025 at 11:19 AM
+-- Generation Time: Aug 04, 2025 at 03:31 PM
 -- Server version: 8.4.3
 -- PHP Version: 8.3.16
 
@@ -38,8 +38,10 @@ CREATE TABLE `cache` (
 --
 
 INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60', 'i:1;', 1753614455),
-('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60:timer', 'i:1753614455;', 1753614455);
+('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60', 'i:1;', 1753632195),
+('laravel-cache-0ec5d4332bf0c08e03c9b50eb32efc60:timer', 'i:1753632195;', 1753632195),
+('laravel-cache-c211e88489cdcfec443b4233d6d647da', 'i:1;', 1754317910),
+('laravel-cache-c211e88489cdcfec443b4233d6d647da:timer', 'i:1754317910;', 1754317910);
 
 -- --------------------------------------------------------
 
@@ -139,6 +141,16 @@ CREATE TABLE `kas_transaksis` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Dumping data for table `kas_transaksis`
+--
+
+INSERT INTO `kas_transaksis` (`id`, `tanggal_transaksi`, `jenis_transaksi`, `sumber_dana`, `deskripsi`, `nominal`, `metode_pembayaran`, `created_by`, `created_at`, `updated_at`) VALUES
+(34, '2025-08-01', 'pemasukan', 'Dana Bos', 'Pencairan Dana', 100000000, 'non_tunai', 2, '2025-08-04 08:23:30', '2025-08-04 08:23:30'),
+(35, '2025-08-02', 'pengeluaran', 'Dana Bos', 'Pencairan Dana', 10000000, 'non_tunai', 2, '2025-08-04 08:25:04', '2025-08-04 08:25:04'),
+(36, '2025-08-03', 'pengeluaran', 'Dana Bos', 'Pencairan Dana', 1000000, 'non_tunai', 2, '2025-08-04 08:25:29', '2025-08-04 08:25:29'),
+(37, '2025-08-03', 'penarikan_tunai', 'Dana Bos', 'Pencairan Dana', 1000000, 'tunai', 2, '2025-08-04 08:25:56', '2025-08-04 08:25:56');
+
 -- --------------------------------------------------------
 
 --
@@ -167,7 +179,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (9, '2025_07_26_161838_change_sumber_dana_type_in_kas_transaksis_table', 1),
 (10, '2025_07_27_081419_create_saldo_akhirs_table', 2),
 (11, '2025_07_27_095135_add_tanggal_periode_to_saldo_akhirs_table', 3),
-(12, '2025_07_27_111831_remove_approved_by_from_kas_transaksis_table', 4);
+(12, '2025_07_27_111831_remove_approved_by_from_kas_transaksis_table', 4),
+(13, '2025_08_04_125231_alter_saldo_columns_nullable_in_saldo_akhirs_table', 5);
 
 -- --------------------------------------------------------
 
@@ -211,8 +224,8 @@ CREATE TABLE `saldo_akhirs` (
   `periode_bulan` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `tanggal_awal` date DEFAULT NULL,
   `tanggal_akhir` date DEFAULT NULL,
-  `saldo_tunai` decimal(15,2) NOT NULL DEFAULT '0.00',
-  `saldo_non_tunai` decimal(15,2) NOT NULL DEFAULT '0.00',
+  `saldo_tunai` decimal(15,2) DEFAULT NULL,
+  `saldo_non_tunai` decimal(15,2) DEFAULT NULL,
   `lembar_100000` int NOT NULL DEFAULT '0',
   `lembar_50000` int NOT NULL DEFAULT '0',
   `lembar_20000` int NOT NULL DEFAULT '0',
@@ -226,6 +239,13 @@ CREATE TABLE `saldo_akhirs` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `saldo_akhirs`
+--
+
+INSERT INTO `saldo_akhirs` (`id`, `periode_bulan`, `tanggal_awal`, `tanggal_akhir`, `saldo_tunai`, `saldo_non_tunai`, `lembar_100000`, `lembar_50000`, `lembar_20000`, `lembar_10000`, `lembar_5000`, `lembar_2000`, `lembar_1000`, `lembar_500`, `lembar_200`, `lembar_100`, `created_at`, `updated_at`) VALUES
+(34, 'Agustus 2025', '2025-08-01', '2025-08-31', NULL, 88000000.00, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, '2025-08-04 08:28:14', '2025-08-04 08:28:14');
 
 -- --------------------------------------------------------
 
@@ -247,7 +267,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('XaxpFOEzAzOtR3LijxsE2ArIN58wBesVQ3YynNU4', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiNDVFS29Pc2NIY3Z3aEJRTzY3V1Y4TEIwcUt0c3Y4NTRRVnpLTGtuTiI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MTp7czo4OiJpbnRlbmRlZCI7czoyMToiaHR0cDovLzEyNy4wLjAuMTo4MDAwIjt9czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Mjc6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9sb2dpbiI7fX0=', 1753615043);
+('kahU7zd9U0ndj06OUrLGItniOQogKs3VdqN4VFWT', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/138.0.0.0 Safari/537.36', 'YTo2OntzOjY6Il90b2tlbiI7czo0MDoidGpQNzdmUG5kQ09RTElUdk5DTEl0ZWxmUkpDTTB5NDZhWUwwUWxIdyI7czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czozOiJ1cmwiO2E6MDp7fXM6OToiX3ByZXZpb3VzIjthOjE6e3M6MzoidXJsIjtzOjUwOiJodHRwOi8vMTI3LjAuMC4xOjgwMDAvc2FsZG8tYWtoaXIvbm9uLXR1bmFpL3BkZi8zNCI7fXM6NTA6ImxvZ2luX3dlYl81OWJhMzZhZGRjMmIyZjk0MDE1ODBmMDE0YzdmNThlYTRlMzA5ODlkIjtpOjI7czoyMToicGFzc3dvcmRfaGFzaF9zYW5jdHVtIjtzOjYwOiIkMnkkMTIkUzBZS2R0WHM3T0FNdjd0TEtGS2tYT0NsTHBMUVJlLkFYRWdHQ3FySy55WGtCc3dZcjVJQ3UiO30=', 1754321300);
 
 -- --------------------------------------------------------
 
@@ -271,6 +291,13 @@ CREATE TABLE `uang_lembaran_tunais` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `uang_lembaran_tunais`
+--
+
+INSERT INTO `uang_lembaran_tunais` (`id`, `kas_transaksi_id`, `lembar_100000`, `lembar_50000`, `lembar_20000`, `lembar_10000`, `lembar_5000`, `lembar_2000`, `lembar_1000`, `lembar_500`, `lembar_200`, `lembar_100`, `created_at`, `updated_at`) VALUES
+(21, 37, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, '2025-08-04 08:25:56', '2025-08-04 08:25:56');
 
 -- --------------------------------------------------------
 
@@ -428,13 +455,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT for table `kas_transaksis`
 --
 ALTER TABLE `kas_transaksis`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=38;
 
 --
 -- AUTO_INCREMENT for table `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` int UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT for table `personal_access_tokens`
@@ -446,13 +473,13 @@ ALTER TABLE `personal_access_tokens`
 -- AUTO_INCREMENT for table `saldo_akhirs`
 --
 ALTER TABLE `saldo_akhirs`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 
 --
 -- AUTO_INCREMENT for table `uang_lembaran_tunais`
 --
 ALTER TABLE `uang_lembaran_tunais`
-  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+  MODIFY `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
 
 --
 -- AUTO_INCREMENT for table `users`
