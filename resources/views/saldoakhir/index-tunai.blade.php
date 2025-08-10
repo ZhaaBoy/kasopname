@@ -26,6 +26,7 @@
                                 <th class="px-4 py-3 text-left">Tanggal Akhir</th> {{-- Tambah ini --}}
                                 <th class="px-4 py-3 text-left">Saldo Tunai</th>
                                 <th class="px-4 py-3 text-left">Rincian Uang Lembaran</th>
+                                <th class="px-4 py-3 text-left">Status</th>
                                 <th class="px-4 py-3 text-left">Aksi</th>
                             </tr>
                         </thead>
@@ -48,6 +49,13 @@
                                     200: {{ $item->lembar_200 }} |
                                     100: {{ $item->lembar_100 }}
                                 </td>
+                                <td class="px-4 py-2"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <!-- icon cek -->
+                                        <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Terverifikasi
+                                    </span></td>
                                 <td class="px-4 py-2">
                                     <div class="flex justify-center gap-2">
                                         <a href="{{ route('saldo-akhir.showTunai', $item->id) }}"><x-button>Detail</x-button></a>

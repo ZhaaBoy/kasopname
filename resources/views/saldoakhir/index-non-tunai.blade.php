@@ -24,6 +24,7 @@
                                 <th class="px-4 py-3 text-left">Tanggal Awal</th>
                                 <th class="px-4 py-3 text-left">Tanggal Akhir</th>
                                 <th class="px-4 py-3 text-left">Saldo Non Tunai</th>
+                                <th class="px-4 py-3 text-left">Status</th>
                                 <th class="px-4 py-3 text-left">Aksi</th>
                             </tr>
                         </thead>
@@ -34,6 +35,13 @@
                                 <td class="px-4 py-2">{{ $item->tanggal_awal ? \Carbon\Carbon::parse($item->tanggal_awal)->format('d M Y') : '-' }}</td>
                                 <td class="px-4 py-2">{{ $item->tanggal_akhir ? \Carbon\Carbon::parse($item->tanggal_akhir)->format('d M Y') : '-' }}</td>
                                 <td class="px-4 py-2 font-medium text-green-600">Rp {{ number_format($item->saldo_non_tunai, 0, ',', '.') }}</td>
+                                <td class="px-4 py-2"><span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                        <!-- icon cek -->
+                                        <svg class="h-4 w-4 mr-1" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                        </svg>
+                                        Terverifikasi
+                                    </span></td>
                                 <td class="px-4 py-2">
                                     <div class="flex justify-center gap-2">
                                         <a href="{{ route('saldo-akhir.showNontunai', $item->id) }}"><x-button>Detail</x-button></a>

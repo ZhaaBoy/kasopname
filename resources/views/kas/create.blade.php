@@ -50,8 +50,10 @@
                     </div>
 
                     <div class="mb-4">
-                        <x-label for="nominal" :value="__('Nominal')" />
-                        <x-input id="nominal" class="block mt-1 w-full" type="number" name="nominal" required />
+                        <x-label for="nominal_display" :value="__('Nominal')" />
+                        <input id="nominal_display" class="block mt-1 w-full border-gray-300 rounded-md shadow-sm"
+                            type="text" placeholder="Rp 0">
+                        <input type="hidden" name="nominal" id="nominal">
                     </div>
 
                     <!-- Uang Lembaran (jika tunai) -->
@@ -96,6 +98,23 @@
             jenis.addEventListener('change', toggleLembaran);
             toggleLembaran(); // initial check saat halaman dimuat
         }
+    </script>
+    <script>
+        const nominalDisplay = document.getElementById('nominal_display');
+        const nominalHidden = document.getElementById('nominal');
+
+        nominalDisplay.addEventListener('input', function() {
+            // Ambil angka saja
+            let numberString = this.value.replace(/[^,\d]/g, '');
+            let number = parseInt(numberString || 0, 10);
+
+            // Format ke Rupiah
+            let formatted = number.toLocaleString('id-ID');
+            this.value = number ? 'Rp ' + formatted : '';
+
+            // Simpan angka murni ke hidden input
+            nominalHidden.value = number || '';
+        });
     </script>
 
 </x-app-layout>
